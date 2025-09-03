@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM Inspector Pro 測試頁面</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .test-image {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #4285f4;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .test-button {
+            background: #4285f4;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #3367d6;
+        }
+        .test-div {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 DOM Inspector Pro 測試頁面</h1>
+    
+    <div class="highlight">
+        <strong>測試說明：</strong> 安裝擴展後，點擊擴展圖標啟動檢查模式，然後滑鼠懸停在下面的元素上查看效果。
+    </div>
+
+    <div class="test-section">
+        <h2>🖼️ 圖片測試</h2>
+        <p>懸停在以下圖片上查看原始尺寸和檔名：</p>
+        
+        <img src="https://picsum.photos/300/200?random=1" alt="隨機圖片 1" class="test-image" title="這是一張測試圖片">
+        <img src="https://picsum.photos/400/300?random=2" alt="隨機圖片 2" class="test-image">
+        <img src="https://picsum.photos/500/400?random=3" alt="隨機圖片 3" class="test-image">
+    </div>
+
+    <div class="test-section">
+        <h2>🔘 按鈕測試</h2>
+        <p>懸停在按鈕上查看元素資訊：</p>
+        
+        <button class="test-button" id="testBtn1">測試按鈕 1</button>
+        <button class="test-button" id="testBtn2">測試按鈕 2</button>
+        <button class="test-button" id="testBtn3">測試按鈕 3</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 文字內容測試</h2>
+        <p>懸停在以下文字區塊上查看內容：</p>
+        
+        <div class="test-div" id="textDiv1">
+            這是一個包含文字的 div 元素，用於測試文字內容的顯示功能。
+        </div>
+        
+        <div class="test-div" id="textDiv2">
+            另一個測試區塊，包含更多的文字內容來測試擴展的功能。
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎨 樣式測試</h2>
+        <p>懸停在以下元素上查看樣式資訊：</p>
+        
+        <div class="test-div" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white;">
+            漸層背景的 div 元素
+        </div>
+        
+        <span style="font-size: 18px; font-weight: bold; color: #e74c3c;">
+            特殊樣式的文字
+        </span>
+    </div>
+
+    <div class="test-section">
+        <h2>🔗 連結測試</h2>
+        <p>懸停在連結上查看資訊：</p>
+        
+        <a href="https://www.google.com" target="_blank" style="color: #4285f4; text-decoration: none;">
+            Google 搜尋引擎
+        </a>
+        <br><br>
+        <a href="https://github.com" target="_blank" style="color: #333; text-decoration: none;">
+            GitHub 程式碼託管平台
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 表單元素測試</h2>
+        <p>懸停在表單元素上查看屬性：</p>
+        
+        <input type="text" placeholder="輸入文字" value="測試輸入框" style="padding: 8px; margin: 5px;">
+        <input type="email" placeholder="輸入郵箱" value="test@example.com" style="padding: 8px; margin: 5px;">
+        <select style="padding: 8px; margin: 5px;">
+            <option>選項 1</option>
+            <option>選項 2</option>
+            <option>選項 3</option>
+        </select>
+    </div>
+
+    <div class="highlight">
+        <strong>測試提示：</strong>
+        <ul>
+            <li>點擊擴展圖標啟動檢查模式</li>
+            <li>滑鼠懸停在元素上查看即時資訊</li>
+            <li>點擊元素查看詳細資訊</li>
+            <li>特別注意圖片元素的原始尺寸和檔名顯示</li>
+        </ul>
+    </div>
+
+    <script>
+        // 添加一些互動功能
+        document.querySelectorAll('.test-button').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('你點擊了: ' + this.textContent);
+            });
+        });
+    </script>
+</body>
+</html>

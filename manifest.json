@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "DOM Inspector Pro",
+  "version": "1.0.0",
+  "description": "檢查網頁 DOM 元素，特別針對圖片顯示原始尺寸和檔名",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "clipboardWrite"
+  ],
+  "action": {
+    "default_title": "DOM Inspector Pro"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon.svg",
+    "48": "icons/icon.svg",
+    "128": "icons/icon.svg"
+  }
+}
