@@ -22,6 +22,10 @@ chrome.action.onClicked.addListener(async (tab) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getStatus') {
     sendResponse({isActive: isActive});
+  } else if (request.action === 'updateStatus') {
+    // 更新狀態以保持同步
+    isActive = request.isActive;
+    console.log('狀態已更新:', isActive);
   }
   sendResponse({received: true});
 });

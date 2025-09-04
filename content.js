@@ -125,24 +125,36 @@ class DOMInspector {
     this.currentElement = null;
     this.popup = null;
     this.highlight = null;
+    this.boundMouseOver = null;
+    this.boundMouseOut = null;
+    this.boundClick = null;
     this.init();
   }
 
   init() {
-    // 創建浮動 popup 面板
-    this.createPopup();
-    
-    // 創建高亮元素
-    this.createHighlight();
-    
-    // 監聽來自 background script 的消息
-    if (chrome && chrome.runtime && chrome.runtime.onMessage) {
-      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.action === 'toggle') {
-          this.toggleInspection(request.isActive);
-          sendResponse({received: true});
-        }
-      });
+    try {
+      // 創建浮動 popup 面板
+      this.createPopup();
+      
+      // 創建高亮元素
+      this.createHighlight();
+      
+      // 監聽來自 background script 的消息
+      if (chrome && chrome.runtime && chrome.runtime.onMessage) {
+        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+          try {
+            if (request.action === 'toggle') {
+              this.toggleInspection(request.isActive);
+              sendResponse({received: true});
+            }
+          } catch (error) {
+            console.log('消息處理錯誤:', error);
+            sendResponse({received: false, error: error.message});
+          }
+        });
+      }
+    } catch (error) {
+      console.log('init 錯誤:', error);
     }
   }
 
@@ -253,28 +265,52 @@ class DOMInspector {
   }
 
   toggleInspection(isActive) {
-    this.isActive = isActive;
-    
-    if (isActive) {
-      this.showPopup();
-      this.bindEvents();
-    } else {
-      this.hidePopup();
-      this.unbindEvents();
-      this.clearSelection();
+    try {
+      // 直接設置狀態，不進行複雜的邏輯判斷
+      this.isActive = isActive;
+      
+      if (this.isActive) {
+        this.showPopup();
+        this.bindEvents();
+        // 每次重新開啟時，重置為無選中狀態
+        this.clearSelection();
+      } else {
+        this.hidePopup();
+        this.unbindEvents();
+        this.clearSelection();
+      }
+    } catch (error) {
+      console.log('toggleInspection 錯誤:', error);
+      // 如果出現錯誤，重置狀態
+      this.isActive = false;
     }
   }
 
   bindEvents() {
-    document.addEventListener('mouseover', this.handleMouseOver.bind(this));
-    document.addEventListener('mouseout', this.handleMouseOut.bind(this));
-    document.addEventListener('click', this.handleClick.bind(this));
+    // 使用箭頭函數來保持 this 的引用，並存儲引用以便移除
+    this.boundMouseOver = (event) => this.handleMouseOver(event);
+    this.boundMouseOut = (event) => this.handleMouseOut(event);
+    this.boundClick = (event) => this.handleClick(event);
+    
+    document.addEventListener('mouseover', this.boundMouseOver);
+    document.addEventListener('mouseout', this.boundMouseOut);
+    document.addEventListener('click', this.boundClick);
   }
 
   unbindEvents() {
-    document.removeEventListener('mouseover', this.handleMouseOver.bind(this));
-    document.removeEventListener('mouseout', this.handleMouseOut.bind(this));
-    document.removeEventListener('click', this.handleClick.bind(this));
+    // 使用存儲的引用來移除事件監聽器
+    if (this.boundMouseOver) {
+      document.removeEventListener('mouseover', this.boundMouseOver);
+      this.boundMouseOver = null;
+    }
+    if (this.boundMouseOut) {
+      document.removeEventListener('mouseout', this.boundMouseOut);
+      this.boundMouseOut = null;
+    }
+    if (this.boundClick) {
+      document.removeEventListener('click', this.boundClick);
+      this.boundClick = null;
+    }
   }
 
   handleMouseOver(event) {
@@ -357,15 +393,41 @@ class DOMInspector {
   }
 
   showPopup() {
-    this.popup.style.display = 'block';
-    this.popup.style.opacity = '1';
+    try {
+      if (this.popup && this.popup.style) {
+        this.popup.style.display = 'block';
+        this.popup.style.opacity = '1';
+      }
+    } catch (error) {
+      console.log('showPopup 錯誤:', error);
+    }
   }
 
   hidePopup() {
-    this.popup.style.opacity = '0';
-    setTimeout(() => {
-      this.popup.style.display = 'none';
-    }, 200);
+    try {
+      if (this.popup && this.popup.style) {
+        this.popup.style.opacity = '0';
+        setTimeout(() => {
+          if (this.popup && this.popup.style) {
+            this.popup.style.display = 'none';
+            // 關閉資訊視窗時，同時關閉檢查模式
+            this.isActive = false;
+            this.unbindEvents();
+            // 不清空選中狀態，只清除高亮
+            this.clearHighlight();
+            
+            // 通知 background.js 更新狀態
+            try {
+              chrome.runtime.sendMessage({action: 'updateStatus', isActive: false});
+            } catch (error) {
+              console.log('無法發送狀態更新消息:', error);
+            }
+          }
+        }, 200);
+      }
+    } catch (error) {
+      console.log('hidePopup 錯誤:', error);
+    }
   }
 
     updatePopupInfo(element) {
