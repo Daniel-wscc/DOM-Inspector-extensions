@@ -196,6 +196,49 @@ class DOMInspector {
       <button id="close-popup" style="background: none; border: none; color: white; cursor: pointer; font-size: 18px;">×</button>
     `;
 
+    // 創建設定區域
+    const settingsArea = document.createElement('div');
+    settingsArea.style.cssText = `
+      padding: 12px 16px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    `;
+    
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = 'use-original-size';
+    checkbox.style.cssText = `
+      margin: 0;
+      cursor: pointer;
+    `;
+    
+    // 從localStorage讀取保存的狀態
+    const savedState = localStorage.getItem('dom-inspector-divide-size');
+    if (savedState === 'true') {
+      checkbox.checked = true;
+    }
+    
+    // 監聽checkbox變化並保存狀態
+    checkbox.addEventListener('change', () => {
+      localStorage.setItem('dom-inspector-divide-size', checkbox.checked.toString());
+    });
+    
+    const checkboxLabel = document.createElement('label');
+    checkboxLabel.htmlFor = 'use-original-size';
+    checkboxLabel.style.cssText = `
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      user-select: none;
+    `;
+    checkboxLabel.textContent = '複製除以2的尺寸';
+    
+    settingsArea.appendChild(checkbox);
+    settingsArea.appendChild(checkboxLabel);
+
     // 創建內容區域
     const content = document.createElement('div');
     content.id = 'popup-content';
@@ -206,6 +249,7 @@ class DOMInspector {
     `;
 
     this.popup.appendChild(header);
+    this.popup.appendChild(settingsArea);
     this.popup.appendChild(content);
     document.body.appendChild(this.popup);
 
@@ -352,7 +396,10 @@ class DOMInspector {
     // 如果點擊的是圖片，直接複製高度
     if (element.tagName === 'IMG') {
       const height = element.naturalHeight || element.offsetHeight;
-      window.copyToClipboard((height / 2).toString());
+      // 檢查checkbox狀態來決定是否除以2
+      const useDividedSize = document.getElementById('use-original-size')?.checked || false;
+      const finalHeight = useDividedSize ? Math.round(height / 2) : height;
+      window.copyToClipboard(finalHeight.toString());
     }
     
     // 如果點擊的是同一個元素，則取消選中
@@ -481,11 +528,17 @@ class DOMInspector {
       propertiesContainer.appendChild(fileSizeRow);
       
       // 尺寸（可點擊複製）
-      const dimensionsText = `${elementData.naturalWidth || elementData.offsetWidth}×${elementData.naturalHeight || elementData.offsetHeight} px`;
+      const originalWidth = elementData.naturalWidth || elementData.offsetWidth;
+      const originalHeight = elementData.naturalHeight || elementData.offsetHeight;
+      const dimensionsText = `${originalWidth}×${originalHeight} px`;
       const dimensionsRow = this.createPropertyRow('Dimensions', dimensionsText, 'dimensions-copy', true);
       const dimensionsSpan = dimensionsRow.querySelector('.dimensions-copy');
       dimensionsSpan.addEventListener('click', () => {
-        window.copyToClipboard(dimensionsText);
+        const useDividedSize = document.getElementById('use-original-size')?.checked || false;
+        const finalWidth = useDividedSize ? Math.round(originalWidth / 2) : originalWidth;
+        const finalHeight = useDividedSize ? Math.round(originalHeight / 2) : originalHeight;
+        const finalDimensionsText = `${finalWidth}×${finalHeight} px`;
+        window.copyToClipboard(finalDimensionsText);
       });
       propertiesContainer.appendChild(dimensionsRow);
       
@@ -513,11 +566,17 @@ class DOMInspector {
     } else {
       // 其他元素的屬性
       // 尺寸（可點擊複製）
-      const dimensionsText = `${elementData.offsetWidth}×${elementData.offsetHeight} px`;
+      const originalWidth = elementData.offsetWidth;
+      const originalHeight = elementData.offsetHeight;
+      const dimensionsText = `${originalWidth}×${originalHeight} px`;
       const dimensionsRow = this.createPropertyRow('Dimensions', dimensionsText, 'dimensions-copy', true);
       const dimensionsSpan = dimensionsRow.querySelector('.dimensions-copy');
       dimensionsSpan.addEventListener('click', () => {
-        window.copyToClipboard(dimensionsText);
+        const useDividedSize = document.getElementById('use-original-size')?.checked || false;
+        const finalWidth = useDividedSize ? Math.round(originalWidth / 2) : originalWidth;
+        const finalHeight = useDividedSize ? Math.round(originalHeight / 2) : originalHeight;
+        const finalDimensionsText = `${finalWidth}×${finalHeight} px`;
+        window.copyToClipboard(finalDimensionsText);
       });
       propertiesContainer.appendChild(dimensionsRow);
       

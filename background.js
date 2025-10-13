@@ -10,22 +10,22 @@ chrome.action.onClicked.addListener(async (tab) => {
   if (!isActive) {
     // 啟用檢查模式
     isActive = true;
-    chrome.tabs.sendMessage(tab.id, {action: 'toggle', isActive: true});
+    chrome.tabs.sendMessage(tab.id, { action: 'toggle', isActive: true });
   } else {
     // 關閉檢查模式
     isActive = false;
-    chrome.tabs.sendMessage(tab.id, {action: 'toggle', isActive: false});
+    chrome.tabs.sendMessage(tab.id, { action: 'toggle', isActive: false });
   }
 });
 
 // 監聽來自內容腳本的消息
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getStatus') {
-    sendResponse({isActive: isActive});
+    sendResponse({ isActive: isActive });
   } else if (request.action === 'updateStatus') {
     // 更新狀態以保持同步
     isActive = request.isActive;
     console.log('狀態已更新:', isActive);
   }
-  sendResponse({received: true});
+  sendResponse({ received: true });
 });
