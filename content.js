@@ -403,16 +403,12 @@ class DOMInspector {
     }
     
     // 如果點擊的是同一個元素，則取消選中
-    if (this.currentElement === element) {
-      this.clearSelection();
-    } else {
-      // 選中新元素
-      this.currentElement = element;
-      // 保持高亮顯示
-      this.showHighlight(element);
-      // 更新資訊框
-      this.updatePopupInfo(element);
-    }
+    // 選中元素 (不再因為重複點擊而取消選中)
+    this.currentElement = element;
+    // 保持高亮顯示
+    this.showHighlight(element);
+    // 更新資訊框
+    this.updatePopupInfo(element);
   }
 
   showHighlight(element) {
@@ -643,7 +639,6 @@ class DOMInspector {
       <div style="text-align: center; color: #666; margin-top: 40px;">
         <div style="font-size: 32px; margin-bottom: 12px; opacity: 0.5;">🔍</div>
         <p style="margin: 0; font-size: 12px;">點擊網頁元素查看詳細資訊</p>
-        <p style="margin: 8px 0 0 0; font-size: 11px; color: #999;">再次點擊同一元素可取消選中</p>
       </div>
     `;
   }
